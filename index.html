@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Micrologic Employee Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Micrologic palette — matches micrologic.com's #0f0f11 theme */
+    --bg:#0f0f11; --panel:#16161a; --card:#16161a; --line:#232328; --line2:#2e2e35;
+    --text:#f4f4f5; --muted:#a1a1aa; --navy:#1b1b20; --radius:14px;
+    /* WashCentral / Micrologic teal */
+    --teal:#4fb39a; --teal-light:#74cbc1; --teal-dark:#1b7a6c; --accent:var(--teal);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+  button{font:inherit;cursor:pointer;color:inherit}
+  .hidden{display:none!important}
+  .wrap{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+
+  .hero{background:linear-gradient(160deg,var(--teal-light) 0%,#3f9f8e 55%,var(--teal-dark) 100%);border:0;color:#fff;border-radius:var(--radius);padding:18px 20px}
+  .hero-top{display:flex;align-items:center;gap:12px}
+  .logo{width:42px;height:42px;border-radius:10px;background:#fff;color:var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.15);font-weight:700;font-size:20px;display:flex;align-items:center;justify-content:center;flex:none}
+  .brand b{display:block;font-size:17px;letter-spacing:.04em}
+  .brand span{font-size:10.5px;color:var(--muted);letter-spacing:.16em}
+  .hero-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .pill{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid currentColor}
+  .ghost{background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:8px;padding:6px 11px;font-size:12.5px}
+  .ghost:hover{color:var(--text);border-color:var(--muted)}
+  .hero hr{border:0;border-top:1px solid rgba(255,255,255,.3);margin:16px 0 14px}
+  .hero h2{font-size:22px}
+  .hero p{color:rgba(255,255,255,.88);font-size:14px;margin-top:4px;line-height:1.5}
+
+  .hero .brand span{color:rgba(255,255,255,.85)}
+  .hero .ghost{border-color:rgba(255,255,255,.55);color:#fff}
+  .hero .ghost:hover{background:rgba(255,255,255,.15);border-color:#fff;color:#fff}
+  .hero .pill{background:#fff;border-color:#fff;color:var(--teal-dark)!important}
+  .brand span{white-space:nowrap}
+  @media(max-width:560px){.hero .pill{display:none}}
+  .hero .notice{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.45);color:#fff}
+  .notice{margin-top:14px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);color:#fcd34d;border-radius:10px;padding:10px 14px;font-size:13.5px;line-height:1.45}
+
+  /* Role chooser */
+  .choose-title{font-size:15px;font-weight:600;margin:26px 0 12px}
+  .roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+  .role-btn{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;transition:border-color .15s,transform .15s}
+  .role-btn:hover{transform:translateY(-1px);border-color:var(--c)}
+  .role-btn .ic{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+  .role-btn b{display:block;font-size:16px;margin-bottom:4px}
+  .role-btn span{color:var(--muted);font-size:13px;line-height:1.45}
+
+  /* Dashboard */
+  section.group{margin-top:26px}
+  section.group h3{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  section.group h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--c)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .tile{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;transition:border-color .15s,transform .15s;position:relative}
+  .tile:hover{transform:translateY(-1px);border-color:var(--c)}
+  .tile .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+  .ic svg{width:19px;height:19px}
+  .tile b{display:block;font-size:15px;margin-bottom:4px;padding-right:80px}
+  .tile span{color:var(--muted);font-size:13px;line-height:1.45}
+  .soon{position:absolute;top:14px;right:14px;font-size:10.5px;font-style:normal;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:2px 7px}
+
+  .state{margin-top:40px;text-align:center;color:var(--muted);font-size:14px}
+  .spinner{width:26px;height:26px;border:3px solid var(--line2);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .state .ghost{margin-top:14px}
+
+  .foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#232328;border:1px solid var(--line2);padding:10px 16px;border-radius:10px;font-size:13.5px;opacity:0;transition:.2s;pointer-events:none;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ---------- Admin ---------- */
+  .link-btn{background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;text-underline-offset:3px;padding:0}
+  .link-btn:hover{color:var(--teal-light)}
+  .primary{background:var(--teal);color:#fff;border:0;border-radius:9px;padding:10px 16px;font-weight:600;font-size:14px}
+  .primary:hover{background:var(--teal-dark)}
+  .primary:disabled{opacity:.6;cursor:default}
+  .danger{color:#f87171!important;border-color:rgba(248,113,113,.4)!important}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;z-index:20;overflow-y:auto}
+  .modal{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:24px}
+  .modal h3{font-size:18px;margin-bottom:4px}
+  .modal .sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;font-weight:500}
+  .field input[type=text],.field input[type=url],.field input[type=password],.field input[type=number],.field select{width:100%;background:var(--bg);border:1px solid var(--line2);color:var(--text);border-radius:9px;padding:10px 12px;font:inherit;font-size:14px}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--teal)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .checks{display:flex;flex-wrap:wrap;gap:8px}
+  .chk{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--line2);border-radius:9px;padding:8px 11px;font-size:13.5px;cursor:pointer}
+  .chk input{accent-color:var(--teal)}
+  .icons{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+  .icon-opt{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:var(--bg);border:1px solid var(--line2);border-radius:9px;color:var(--muted)}
+  .icon-opt svg{width:18px;height:18px}
+  .icon-opt.sel{border-color:var(--teal);color:var(--teal-light)}
+  .form-err{color:#f87171;font-size:13px;min-height:18px;margin:4px 0 10px}
+  .actions{display:flex;gap:10px;justify-content:flex-end}
+  .admin-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 12px;flex-wrap:wrap}
+  .admin-bar h3{font-size:15px}
+  .filter{display:flex;gap:6px;flex-wrap:wrap}
+  .filter button{background:var(--card);border:1px solid var(--line2);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--muted)}
+  .filter button.on{color:#fff;border-color:var(--teal);background:rgba(79,179,154,.15)}
+  .admin-list{display:grid;gap:10px}
+  .arow{min-width:0;display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .arow.off{opacity:.55}
+  .arow .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:none;background:var(--line);color:var(--text)}
+  .arow .ic svg{width:18px;height:18px}
+  .arow .meta{flex:1 1 0;min-width:0}
+  .arow .meta b{font-size:14.5px;display:block}
+  .arow .meta .u{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+  .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+  .chip{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+  .chip.muted{color:var(--muted)}
+  .arow .btns{display:flex;gap:6px;flex:none}
+  @media(max-width:560px){.arow{flex-wrap:wrap}.arow .meta{flex-basis:calc(100% - 48px)}.arow .btns{width:100%;justify-content:flex-end}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ==================================================================
+     THE ONLY SETTING: paste your Apps Script web-app URL (ends in /exec).
+     Everything else — roles, buttons, links, text — comes from the Google Sheet.
+     Leave it empty to preview with sample data.
+     ================================================================== -->
+<script>
+const APPS_SCRIPT_URL = "";
+</script>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="logo" id="logo">M</div>
+      <div class="brand"><b id="company">MICROLOGIC</b><span id="portalTitle">EMPLOYEE PORTAL</span></div>
+      <div class="hero-right">
+        <span class="pill hidden" id="rolePill"></span>
+        <button class="ghost hidden" id="switchBtn">Switch role</button>
+      </div>
+    </div>
+    <hr>
+    <h2 id="heading">Welcome</h2>
+    <p id="tagline"></p>
+    <div class="notice hidden" id="announcement"></div>
+  </div>
+
+  <div id="view"><div class="state"><div class="spinner"></div>Loading portal…</div></div>
+
+  <div class="foot">
+    <span id="footLeft"></span>
+    <span><span id="footRight"></span> &nbsp;<button class="link-btn" id="adminLink">Admin</button></span>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- Admin login -->
+<div class="overlay hidden" id="loginModal">
+  <form class="modal" id="loginForm" autocomplete="on">
+    <h3>Admin login</h3>
+    <p class="sub" id="loginSub">Sign in to add and edit portal buttons.</p>
+    <div class="field"><label for="lu">Username</label><input type="text" id="lu" autocomplete="username" autocapitalize="none" required></div>
+    <div class="field"><label for="lp">Password</label><input type="password" id="lp" autocomplete="current-password" required></div>
+    <div class="form-err" id="loginErr"></div>
+    <div class="actions">
+      <button type="button" class="ghost" id="loginCancel">Cancel</button>
+      <button type="submit" class="primary" id="loginGo">Log in</button>
+    </div>
+  </form>
+</div>
+
+<!-- Add / edit button -->
+<div class="overlay hidden" id="editModal">
+  <form class="modal" id="editForm">
+    <h3 id="editTitle">Add button</h3>
+    <p class="sub">Saved straight to the Links tab of your Google Sheet.</p>
+    <div class="field"><label for="fTitle">Button name</label><input type="text" id="fTitle" maxlength="60" required></div>
+    <div class="field"><label for="fDesc">Short description</label><input type="text" id="fDesc" maxlength="120"></div>
+    <div class="field"><label for="fUrl">Link (where the button goes)</label><input type="url" id="fUrl" placeholder="https://"></div>
+    <div class="field"><label>Show for</label><div class="checks" id="fRoles"></div></div>
+    <div class="row2">
+      <div class="field"><label for="fSection">Section heading</label><input type="text" id="fSection" list="sectionList" maxlength="40"><datalist id="sectionList"></datalist></div>
+      <div class="field"><label for="fOrder">Order</label><input type="number" id="fOrder" step="1"></div>
+    </div>
+    <div class="field"><label>Icon</label><div class="icons" id="fIcons"></div></div>
+    <div class="field"><label class="chk" style="display:inline-flex"><input type="checkbox" id="fActive" checked> Show this button on the portal</label></div>
+    <div class="form-err" id="editErr"></div>
+    <div class="actions">
+      <button type="button" class="ghost" id="editCancel">Cancel</button>
+      <button type="submit" class="primary" id="editSave">Save</button>
+    </div>
+  </form>
+</div>
+
+<script>
+/* ---------- Sample data (used only when APPS_SCRIPT_URL is empty) ---------- */
+const SAMPLE = {
+  settings:{ CompanyName:"MICROLOGIC", PortalTitle:"EMPLOYEE PORTAL", Tagline:"Your central hub for field operations and project management.", Announcement:"Preview mode: showing sample data. Add your Apps Script URL to load your Google Sheet." },
+  roles:[
+    { id:"technician", label:"Field Technician", description:"Product and toolbox requests", color:"#4fb39a" },
+    { id:"pm", label:"Project Manager", description:"Product requests", color:"#74cbc1" }
+  ],
+  links:[
+    { order:1, roles:["technician"], section:"Field Technician", title:"Product Request", description:"Request parts, products, and supplies.", url:"https://script.google.com/a/macros/micrologic.net/s/AKfycbzj9CN73CZliysBJuxk-fIuNDG8LXBtXKCQG-Q8BvjmuqknKxOaU24_o0JGEEmgDKc/exec", icon:"clipboard" },
+    { order:2, roles:["technician"], section:"Field Technician", title:"Toolbox Request", description:"Request tools and equipment for your toolbox.", url:"https://script.google.com/a/macros/micrologic.net/s/AKfycbw6DN9yHzlnjX7AFThCwuHp8AK3ABQ2q0Ua1H4ciRKk3WeLItth_K4sBnbiPnGMQmfM/exec", icon:"box" },
+    { order:10, roles:["pm"], section:"Project Management", title:"Product Request", description:"Request parts, products, and supplies.", url:"https://script.google.com/a/macros/micrologic.net/s/AKfycbzj9CN73CZliysBJuxk-fIuNDG8LXBtXKCQG-Q8BvjmuqknKxOaU24_o0JGEEmgDKc/exec", icon:"clipboard" }
+  ]
+};
+
+/* ---------- Built-in buttons ----------
+   These always appear, in addition to the buttons on the sheet's Links tab.
+   To change them, edit this list and re-upload index.html to Netlify.
+   (Buttons added here don't show on the admin screen, which edits the sheet.) */
+const BUILT_IN_LINKS = [
+  { roles:["pm"], section:"Project Management", title:"SOLA Portal", description:"Cardknox / SOLA partner portal login.",
+    url:"https://partner.cardknox.com/login", icon:"link", order:11 },
+  { roles:["pm"], section:"Project Management", title:"On Site Field Tech Orders", description:"View and manage on-site field tech orders.",
+    url:"https://docs.google.com/spreadsheets/d/1Ixa0gPxcmK9_0BgDIBkvOpaH48XSgdg4S9TzE2R7eVI/edit?gid=2094505440#gid=2094505440", icon:"clipboard", order:12 },
+  { roles:["pm"], section:"Project Management", title:"Backorder Equipment Log", description:"Track backordered equipment.",
+    url:"https://docs.google.com/spreadsheets/d/1KApzSlv7hrNwCwUn-fPLbui9AIVMR_Op4_oNwQqD9KQ/edit?gid=832722442#gid=832722442", icon:"box", order:13 }
+];
+
+/** Adds the built-in buttons, skipping any the sheet already has (same title + role). */
+function addBuiltInLinks(data){
+  data.links = data.links || [];
+  BUILT_IN_LINKS.forEach(b => {
+    const roles = b.roles.filter(r => !data.links.some(l => l.title.trim().toLowerCase() === b.title.toLowerCase() && l.roles.includes(r)));
+    if (roles.length) data.links.push({ ...b, roles, active:true, builtIn:true });
+  });
+}
+
+/* ---------- Icons (names used in the sheet's Icon column) ---------- */
+const ICONS = {
+  clipboard:'<path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6M9 16h4"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  wrench:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/>',
+  box:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
+  map:'<path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3z"/><path d="M9 3v15M15 6v15"/>',
+  grid:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  truck:'<path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/>',
+  chart:'<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-7"/>',
+  idcard:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16a3 3 0 0 1 6 0M15 10h3M15 14h3"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+  folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  calendar:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+  camera:'<path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/>',
+  phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+  link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+  person:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
+};
+const ROLE_ICON = { technician:"wrench", pm:"grid", admin:"gear" };
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const svg = name => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ICONS.link}</svg>`;
+const safeColor = c => /^#[0-9a-f]{3,8}$/i.test(c || "") ? c : "#3b82f6";
+const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "";
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2400); }
+function remember(k,v){ try{ v==null ? localStorage.removeItem(k) : localStorage.setItem(k,v); }catch(e){} }
+function recall(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+
+let DATA = null;
+
+/* ---------- Load from Apps Script ---------- */
+const DEMO = !APPS_SCRIPT_URL;
+async function loadData(){
+  $("view").innerHTML = `<div class="state"><div class="spinner"></div>Loading portal…</div>`;
+  if (DEMO){
+    if (!DATA){ DATA = JSON.parse(JSON.stringify(SAMPLE)); addBuiltInLinks(DATA); }
+    return start();
+  }
+  try{
+    const r = await fetch(APPS_SCRIPT_URL + "?action=portal", { redirect:"follow" });
+    const body = await r.json();
+    if (!body.ok) throw new Error(body.error || "The sheet returned an error.");
+    DATA = body.data;
+    addBuiltInLinks(DATA);
+    start();
+  }catch(err){
+    $("view").innerHTML = `<div class="state">Couldn't load the portal.<br><small>${esc(err.message)}</small><br><button class="ghost" id="retry">Try again</button></div>`;
+    $("retry").onclick = loadData;
+  }
+}
+
+/* ---------- Render ---------- */
+function applySettings(){
+  const s = DATA.settings || {};
+  const company = s.CompanyName || "MICROLOGIC";
+  $("company").textContent = company;
+  $("logo").textContent = company.charAt(0).toUpperCase();
+  $("portalTitle").textContent = s.PortalTitle || "EMPLOYEE PORTAL";
+  $("tagline").textContent = s.Tagline || "";
+  document.title = (s.CompanyName ? s.CompanyName.charAt(0) + s.CompanyName.slice(1).toLowerCase() + " " : "") + "Employee Portal";
+  const a = $("announcement");
+  if (s.Announcement){ a.textContent = s.Announcement; a.classList.remove("hidden"); } else a.classList.add("hidden");
+  $("footLeft").textContent = s.SupportEmail ? "Need help? " + s.SupportEmail : "";
+  $("footRight").textContent = DATA.updated ? "Updated " + new Date(DATA.updated).toLocaleString() : "";
+}
+
+function showChooser(){
+  $("heading").textContent = "Welcome";
+  $("rolePill").classList.add("hidden");
+  $("switchBtn").classList.add("hidden");
+  $("view").innerHTML = `
+    <div class="choose-title">Select your role</div>
+    <div class="roles">
+      ${DATA.roles.map(r => `
+        <button class="role-btn" data-role="${esc(r.id)}" style="--c:${safeColor(r.color)}">
+          <div class="ic">${svg(ROLE_ICON[r.id] || "person")}</div>
+          <b>${esc(r.label)}</b><span>${esc(r.description)}</span>
+        </button>`).join("")}
+    </div>`;
+}
+
+function showDashboard(role){
+  $("heading").textContent = role.label + " Dashboard";
+  const pill = $("rolePill");
+  pill.textContent = role.label; pill.style.color = safeColor(role.color); pill.classList.remove("hidden");
+  $("switchBtn").classList.toggle("hidden", DATA.roles.length < 2);
+
+  const mine = DATA.links
+    .filter(l => l.roles.includes(role.id) && l.active !== false)
+    .slice().sort((a,b) => (Number(a.order)||999) - (Number(b.order)||999));
+  if (!mine.length){ $("view").innerHTML = `<div class="state">No buttons are set up for this role yet.</div>`; return; }
+
+  // Group by section, keeping sheet order. Section colour = role colour of the first role that owns the section's title, else this role.
+  const sections = [];
+  mine.forEach(l => {
+    let s = sections.find(x => x.name === l.section);
+    if (!s){ s = { name:l.section, links:[] }; sections.push(s); }
+    s.links.push(l);
+  });
+  const colorFor = name => {
+    const match = DATA.roles.find(r => r.label.toLowerCase().startsWith(name.toLowerCase().split(" ")[0]));
+    return safeColor(match ? match.color : role.color);
+  };
+
+  $("view").innerHTML = sections.map(s => {
+    const c = colorFor(s.name);
+    return `<section class="group" style="--c:${c}">
+      <h3><span class="dot"></span>${esc(s.name)}</h3>
+      <div class="grid">
+        ${s.links.map(l => {
+          const url = safeUrl(l.url);
+          const inner = `<div class="ic">${svg(l.icon)}</div><b>${esc(l.title)}</b><span>${esc(l.description)}</span>`;
+          return url
+            ? `<a class="tile" href="${esc(url)}" target="_blank" rel="noopener">${inner}</a>`
+            : `<a class="tile" href="#${esc(role.id)}" data-soon="${esc(l.title)}">${inner}<em class="soon">Coming soon</em></a>`;
+        }).join("")}
+      </div>
+    </section>`;
+  }).join("");
+}
+
+function route(){
+  const id = location.hash.slice(1);
+  const role = DATA.roles.find(r => r.id === id);
+  if (role){ remember("ml_role", role.id); showDashboard(role); }
+  else showChooser();
+  window.scrollTo(0,0);
+}
+
+function start(){
+  applySettings();
+  if (!location.hash){
+    const saved = recall("ml_role");
+    if (saved && DATA.roles.some(r => r.id === saved)) { location.hash = saved; return; }
+  }
+  route();
+}
+
+/* ---------- Events ---------- */
+$("view").addEventListener("click", e => {
+  const rb = e.target.closest("[data-role]");
+  if (rb){ location.hash = rb.dataset.role; return; }
+  const soon = e.target.closest("[data-soon]");
+  if (soon){ e.preventDefault(); toast(soon.dataset.soon + " — link not added yet"); }
+});
+$("switchBtn").addEventListener("click", () => { remember("ml_role", null); location.hash = ""; showChooser(); });
+window.addEventListener("hashchange", () => { if (DATA && !ADMIN.on) route(); });
+
+/* =====================================================================
+   ADMIN — login is checked by Apps Script; nothing secret lives here.
+   ===================================================================== */
+const ADMIN = { on:false, token:null, links:[], roles:[], filter:"all", editing:null, icon:"link" };
+
+async function api(action, payload = {}){
+  const r = await fetch(APPS_SCRIPT_URL, {
+    method:"POST",
+    headers:{ "Content-Type":"text/plain;charset=utf-8" },   // avoids a CORS preflight Apps Script can't answer
+    body: JSON.stringify({ action, token: ADMIN.token, ...payload })
+  });
+  const body = await r.json();
+  if (body.authError){ ADMIN.token = null; store("ml_admin", null); }
+  if (!body.ok) throw new Error(body.error || "Request failed");
+  return body;
+}
+function store(k,v){ try{ v==null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k,v); }catch(e){} }
+function fetchStore(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+
+/* ---- Demo backend (preview only: changes are kept in this page, not saved) ---- */
+function demoList(){
+  return {
+    links: DATA.links.filter(l => !l.builtIn).map((l,i) => ({ row:i+2, active:l.active !== false, order:l.order ?? (i+1), ...l })),
+    roles: DATA.roles.map(r => ({ ...r, active:true }))
+  };
+}
+function demoSave(link){
+  const clean = { roles:link.roles, section:link.section || "General", title:link.title, description:link.description, url:link.url, icon:link.icon, order:link.order, active:link.active };
+  const own = DATA.links.filter(l => !l.builtIn), built = DATA.links.filter(l => l.builtIn);
+  if (link.row) own[link.row-2] = clean; else own.push(clean);
+  DATA.links = own.concat(built);
+  return demoList();
+}
+function demoDelete(row){ const own = DATA.links.filter(l => !l.builtIn); own.splice(row-2,1); DATA.links = own.concat(DATA.links.filter(l => l.builtIn)); return demoList(); }
+
+/* ---- Login ---- */
+function openLogin(){
+  if (ADMIN.token || (DEMO && ADMIN.demoIn)) return enterAdmin();
+  $("loginErr").textContent = "";
+  $("loginSub").textContent = DEMO ? "Preview mode: any username and password work here. Your real login is checked by Apps Script." : "Sign in to add and edit portal buttons.";
+  $("loginModal").classList.remove("hidden");
+  setTimeout(() => $("lu").focus(), 50);
+}
+$("adminLink").addEventListener("click", openLogin);
+$("loginCancel").addEventListener("click", () => $("loginModal").classList.add("hidden"));
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = $("loginGo"); btn.disabled = true; $("loginErr").textContent = "";
+  try{
+    if (DEMO){ ADMIN.demoIn = true; }
+    else {
+      const res = await api("login", { username:$("lu").value, password:$("lp").value });
+      ADMIN.token = res.token; store("ml_admin", res.token);
+    }
+    $("lp").value = "";
+    $("loginModal").classList.add("hidden");
+    enterAdmin();
+  }catch(err){ $("loginErr").textContent = err.message; }
+  finally{ btn.disabled = false; }
+});
+
+/* ---- Admin panel ---- */
+async function enterAdmin(){
+  ADMIN.on = true;
+  $("announcement").classList.add("hidden");
+  $("heading").textContent = "Manage Buttons";
+  const pill = $("rolePill"); pill.textContent = "Admin"; pill.style.color = ""; pill.classList.remove("hidden");
+  const sw = $("switchBtn"); sw.textContent = "Exit admin"; sw.classList.remove("hidden");
+  $("view").innerHTML = `<div class="state"><div class="spinner"></div>Loading buttons…</div>`;
+  try{
+    const data = DEMO ? demoList() : (await api("list")).data;
+    ADMIN.links = data.links; ADMIN.roles = data.roles;
+    renderAdmin();
+  }catch(err){
+    if (!ADMIN.token && !DEMO){ exitAdmin(); toast(err.message); openLogin(); return; }
+    $("view").innerHTML = `<div class="state">${esc(err.message)}<br><button class="ghost" id="retryAdmin">Try again</button></div>`;
+    $("retryAdmin").onclick = enterAdmin;
+  }
+}
+
+function exitAdmin(){
+  ADMIN.on = false;
+  $("switchBtn").textContent = "Switch role";
+  if (DEMO){ applySettings(); route(); } else { DATA = null; loadData(); }
+}
+
+async function logout(){
+  if (!DEMO && ADMIN.token){ try{ await api("logout"); }catch(e){} }
+  ADMIN.token = null; ADMIN.demoIn = false; store("ml_admin", null);
+  exitAdmin(); toast("Logged out");
+}
+
+function roleChip(id){
+  const r = ADMIN.roles.find(x => x.id === id);
+  return `<span class="chip" style="color:${safeColor(r ? r.color : "")}">${esc(r ? r.label : id)}</span>`;
+}
+
+function renderAdmin(){
+  const roles = ADMIN.roles;
+  const list = ADMIN.links
+    .filter(l => ADMIN.filter === "all" || l.roles.includes(ADMIN.filter))
+    .slice().sort((a,b) => (Number(a.order)||999) - (Number(b.order)||999));
+
+  $("view").innerHTML = `
+    ${DEMO ? `<div class="notice">Preview mode: changes here aren't saved. Once the Apps Script URL is added, they save to your Google Sheet.</div>` : ""}
+    <div class="admin-bar">
+      <div class="filter">
+        <button data-filter="all" class="${ADMIN.filter==="all"?"on":""}">All (${ADMIN.links.length})</button>
+        ${roles.map(r => `<button data-filter="${esc(r.id)}" class="${ADMIN.filter===r.id?"on":""}">${esc(r.label)}</button>`).join("")}
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="ghost" id="logoutBtn">Log out</button>
+        <button class="primary" id="addBtn">+ Add button</button>
+      </div>
+    </div>
+    <div class="admin-list">
+      ${list.length ? list.map(l => `
+        <div class="arow ${l.active ? "" : "off"}">
+          <div class="ic">${svg(l.icon)}</div>
+          <div class="meta">
+            <b>${esc(l.title)}</b>
+            <div class="u">${l.url ? esc(l.url) : "No link yet: shows “Coming soon”"}</div>
+            <div class="chips">
+              ${l.roles.map(roleChip).join("")}
+              <span class="chip muted">${esc(l.section || "General")}</span>
+              ${l.active ? "" : `<span class="chip muted">Hidden</span>`}
+            </div>
+          </div>
+          <div class="btns">
+            <button class="ghost" data-edit="${l.row}">Edit</button>
+            <button class="ghost" data-del="${l.row}">Delete</button>
+          </div>
+        </div>`).join("") : `<div class="state">No buttons yet. Click “+ Add button”.</div>`}
+    </div>`;
+}
+
+$("view").addEventListener("click", async e => {
+  if (!ADMIN.on) return;
+  const f = e.target.closest("[data-filter]");
+  if (f){ ADMIN.filter = f.dataset.filter; renderAdmin(); return; }
+  if (e.target.closest("#addBtn")) return openEditor(null);
+  if (e.target.closest("#logoutBtn")) return logout();
+  const ed = e.target.closest("[data-edit]");
+  if (ed) return openEditor(ADMIN.links.find(l => l.row === Number(ed.dataset.edit)));
+  const del = e.target.closest("[data-del]");
+  if (del){
+    if (!del.classList.contains("danger")){            // first tap arms, second tap deletes
+      del.classList.add("danger"); del.textContent = "Confirm delete";
+      setTimeout(() => { if (del.isConnected){ del.classList.remove("danger"); del.textContent = "Delete"; } }, 4000);
+      return;
+    }
+    const link = ADMIN.links.find(l => l.row === Number(del.dataset.del));
+    del.disabled = true; del.textContent = "Deleting…";
+    try{
+      const data = DEMO ? demoDelete(link.row) : (await api("deleteLink", { row:link.row, title:link.title })).data;
+      ADMIN.links = data.links; renderAdmin(); toast("Button deleted");
+    }catch(err){ toast(err.message); enterAdmin(); }
+  }
+});
+
+$("switchBtn").addEventListener("click", e => {
+  if (ADMIN.on){ e.stopImmediatePropagation(); exitAdmin(); }
+}, true);
+
+/* ---- Add / edit form ---- */
+function openEditor(link){
+  ADMIN.editing = link;
+  $("editTitle").textContent = link ? "Edit button" : "Add button";
+  $("fTitle").value = link ? link.title : "";
+  $("fDesc").value = link ? link.description : "";
+  $("fUrl").value = link ? link.url : "";
+  $("fOrder").value = link ? (link.order ?? "") : (Math.max(0, ...ADMIN.links.map(l => Number(l.order)||0)) + 1);
+  $("fActive").checked = link ? link.active : true;
+  const preset = !link && ADMIN.filter !== "all" ? [ADMIN.filter] : [];
+  $("fRoles").innerHTML = ADMIN.roles.map(r => `
+    <label class="chk"><input type="checkbox" value="${esc(r.id)}" ${(link ? link.roles.includes(r.id) : preset.includes(r.id)) ? "checked" : ""}> ${esc(r.label)}${r.active ? "" : " (off)"}</label>`).join("");
+  const sections = [...new Set(ADMIN.links.map(l => l.section).filter(Boolean))];
+  $("sectionList").innerHTML = sections.map(s => `<option value="${esc(s)}">`).join("");
+  $("fSection").value = link ? link.section : (preset[0] ? (ADMIN.links.find(l => l.roles.includes(preset[0]))?.section || "") : "");
+  ADMIN.icon = link ? link.icon : "link";
+  $("fIcons").innerHTML = Object.keys(ICONS).map(n => `<button type="button" class="icon-opt ${n===ADMIN.icon?"sel":""}" data-icon="${n}" title="${n}">${svg(n)}</button>`).join("");
+  $("editErr").textContent = "";
+  $("editModal").classList.remove("hidden");
+  setTimeout(() => $("fTitle").focus(), 50);
+}
+$("fIcons").addEventListener("click", e => {
+  const b = e.target.closest("[data-icon]"); if (!b) return;
+  ADMIN.icon = b.dataset.icon;
+  $("fIcons").querySelectorAll(".icon-opt").forEach(x => x.classList.toggle("sel", x === b));
+});
+$("editCancel").addEventListener("click", () => $("editModal").classList.add("hidden"));
+$("editForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const roles = [...$("fRoles").querySelectorAll("input:checked")].map(i => i.value);
+  const url = $("fUrl").value.trim();
+  const err = $("editErr");
+  if (!$("fTitle").value.trim()) return err.textContent = "Give the button a name.";
+  if (!roles.length) return err.textContent = "Choose at least one role.";
+  if (url && !/^https:\/\//i.test(url)) return err.textContent = "The link must start with https://";
+  const ed = ADMIN.editing;
+  const link = {
+    row: ed ? ed.row : null, originalTitle: ed ? ed.title : null,
+    title: $("fTitle").value.trim(), description: $("fDesc").value.trim(), url,
+    roles, section: $("fSection").value.trim(), icon: ADMIN.icon,
+    order: $("fOrder").value === "" ? "" : Number($("fOrder").value), active: $("fActive").checked
+  };
+  const btn = $("editSave"); btn.disabled = true; btn.textContent = "Saving…"; err.textContent = "";
+  try{
+    const data = DEMO ? demoSave(link) : (await api("saveLink", { link })).data;
+    ADMIN.links = data.links;
+    $("editModal").classList.add("hidden");
+    renderAdmin(); toast(ed ? "Button updated" : "Button added");
+  }catch(e2){ err.textContent = e2.message; }
+  finally{ btn.disabled = false; btn.textContent = "Save"; }
+});
+
+/* Resume an admin session after a page refresh */
+ADMIN.token = DEMO ? null : fetchStore("ml_admin");
+
+loadData();
+</script>
+</body>
+</html>
